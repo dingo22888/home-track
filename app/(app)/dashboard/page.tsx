@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client"
 import { PageHeader } from "@/components/page-header"
 import { DashboardCards } from "@/components/dashboard-cards"
 import { LatestReadingsTable } from "@/components/latest-readings-table"
+import { ConsumptionChart } from "@/components/consumption-chart"
 import { EmptyHouseholdState } from "@/components/empty-household-state"
 import type { Consumer, Reading } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function DashboardPage() {
   const { activeHousehold, loading: householdLoading } = useHousehold()
   const [consumers, setConsumers] = useState<Consumer[]>([])
+  const [allReadings, setAllReadings] = useState<Reading[]>([])
   const [latestReadings, setLatestReadings] = useState<
     (Reading & { consumer: Consumer })[]
   >([])
@@ -21,6 +23,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!activeHousehold) {
       setConsumers([])
+      setAllReadings([])
       setLatestReadings([])
       setLoading(false)
       return
@@ -43,6 +46,17 @@ export default function DashboardPage() {
       // Fetch latest reading per consumer using distinct on
       if (consumersData && consumersData.length > 0) {
         const consumerIds = consumersData.map((c) => c.id)
+
+        // Fetch ALL readings for the chart
+        const { data: allReadingsData } = await supabase
+          .from("readings")
+          .select("*")
+          .in("consumer_id", consumerIds)
+          .order("reading_date", { ascending: true })
+
+        setAllReadings(allReadingsData || [])
+
+        // Fetch readings with consumer join for the latest-readings table
         const { data: readingsData } = await supabase
           .from("readings")
           .select("*, consumer:consumers(*)")
@@ -59,6 +73,7 @@ export default function DashboardPage() {
         }
         setLatestReadings(Array.from(latestMap.values()))
       } else {
+        setAllReadings([])
         setLatestReadings([])
       }
 
@@ -96,6 +111,7 @@ export default function DashboardPage() {
         consumerCount={consumers.length}
         readingCount={latestReadings.length}
       />
+      <ConsumptionChart consumers={consumers} readings={allReadings} />
       <LatestReadingsTable readings={latestReadings} />
     </div>
   )
