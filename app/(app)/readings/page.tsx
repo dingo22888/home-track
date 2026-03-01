@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import {useEffect, useState, useCallback, useMemo} from "react"
 import Link from "next/link"
 import { useHousehold } from "@/lib/household-context"
 import { createClient } from "@/lib/supabase/client"
@@ -84,10 +84,11 @@ export default function ReadingsPage() {
     fetchData()
   }, [fetchData])
 
-  const filteredReadings =
-    selectedConsumerId === "all"
-      ? readings
-      : readings.filter((r) => r.consumer_id === selectedConsumerId)
+  const filteredReadings = useMemo(() => {
+    return selectedConsumerId === "all"
+        ? readings
+        : readings.filter((r) => r.consumer_id === selectedConsumerId)
+  }, [selectedConsumerId, readings])
 
   const columns: ColumnDef<ReadingWithConsumer>[] = [
     {
