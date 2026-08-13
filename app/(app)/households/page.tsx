@@ -47,41 +47,19 @@ export default function HouseholdsPage() {
     setCreating(true)
 
     const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
 
-    if (!user) {
-      toast.error("Not authenticated")
-      setCreating(false)
-      return
-    }
+    // Atomically create the household and the owner membership via a
+    // security-definer function to satisfy RLS on both tables.
+    const { data: householdId, error } = await supabase.rpc(
+      "create_household_with_owner",
+      {
+        p_name: name,
+        p_address: address || null,
+      },
+    )
 
-    const { data: household, error: hError } = await supabase
-      .from("households")
-      .insert({
-        name,
-        address: address || null,
-        created_by: user.id,
-      })
-      .select()
-      .single()
-
-    if (hError) {
-      toast.error(hError.message)
-      setCreating(false)
-      return
-    }
-
-    // Create owner membership
-    const { error: mError } = await supabase.from("memberships").insert({
-      user_id: user.id,
-      household_id: household.id,
-      role: "owner",
-    })
-
-    if (mError) {
-      toast.error(mError.message)
+    if (error) {
+      toast.error(error.message)
       setCreating(false)
       return
     }
@@ -92,7 +70,9 @@ export default function HouseholdsPage() {
     setOpen(false)
     setCreating(false)
     await refresh()
-    setActiveHouseholdId(household.id)
+    if (householdId) {
+      setActiveHouseholdId(householdId as string)
+    }
   }
 
   function getRoleForHousehold(householdId: string) {
