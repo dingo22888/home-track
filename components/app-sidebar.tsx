@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/sidebar"
 import { HouseholdSwitcher } from "@/components/household-switcher"
 import { UserNav } from "@/components/user-nav"
+import { useI18n } from "@/lib/i18n"
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -34,6 +35,7 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const { t } = useI18n()
 
   return (
     <Sidebar>
@@ -47,13 +49,13 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Household</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("Household")}</SidebarGroupLabel>
           <SidebarGroupContent className="px-2">
             <HouseholdSwitcher />
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("Navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => (
@@ -64,7 +66,7 @@ export function AppSidebar() {
                   >
                     <Link href={item.href}>
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <span>{t(item.title)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

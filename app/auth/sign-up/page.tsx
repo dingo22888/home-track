@@ -16,8 +16,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { toast } from "sonner"
+import { useI18n } from "@/lib/i18n"
 
 export default function SignUpPage() {
+  const { t } = useI18n()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [displayName, setDisplayName] = useState("")
@@ -56,25 +58,25 @@ export default function SignUpPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold tracking-tight">
-            Create account
+            {t("Create account")}
           </CardTitle>
-          <CardDescription>Get started with HomeTrack</CardDescription>
+          <CardDescription>{t("Get started with HomeTrack")}</CardDescription>
         </CardHeader>
         <form onSubmit={handleSignUp}>
           <CardContent className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="display-name">Display name</Label>
+              <Label htmlFor="display-name">{t("Display name")}</Label>
               <Input
                 id="display-name"
                 type="text"
-                placeholder="Your name"
+                placeholder={t("Your name")}
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 autoComplete="name"
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("Email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -86,11 +88,11 @@ export default function SignUpPage() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("Password")}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="At least 6 characters"
+                placeholder={t("At least 6 characters")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -101,15 +103,15 @@ export default function SignUpPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating account..." : "Create account"}
+              {loading ? t("Creating account...") : t("Create account")}
             </Button>
             <p className="text-sm text-muted-foreground">
-              Already have an account?{" "}
+              {t("Already have an account? ")}
               <Link
                 href="/auth/login"
                 className="text-foreground underline underline-offset-4 hover:text-primary"
               >
-                Sign in
+                {t("Sign in")}
               </Link>
             </p>
           </CardFooter>

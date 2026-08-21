@@ -31,12 +31,13 @@ import {
 } from "@tanstack/react-table"
 import { ClipboardList } from "lucide-react"
 import type { Consumer, Reading } from "@/lib/types"
-import { formatDate, formatNumber } from "@/lib/format"
 import { EmptyHouseholdState } from "@/components/empty-household-state"
+import { useI18n } from "@/lib/i18n"
 
 type ReadingWithConsumer = Reading & { consumer: Consumer }
 
 export default function ReadingsPage() {
+  const { t, formatDate, formatNumber } = useI18n()
   const { activeHousehold, loading: householdLoading } = useHousehold()
   const [consumers, setConsumers] = useState<Consumer[]>([])
   const [readings, setReadings] = useState<ReadingWithConsumer[]>([])
@@ -93,12 +94,12 @@ export default function ReadingsPage() {
   const columns: ColumnDef<ReadingWithConsumer>[] = [
     {
       accessorKey: "reading_date",
-      header: "Date",
+      header: t("Date"),
       cell: ({ row }) => formatDate(row.original.reading_date),
     },
     {
       accessorKey: "consumer.name",
-      header: "Consumer",
+      header: t("Consumer"),
       cell: ({ row }) => (
         <Link
           href={`/consumers/${row.original.consumer_id}`}
@@ -110,16 +111,16 @@ export default function ReadingsPage() {
     },
     {
       accessorKey: "consumer.type",
-      header: "Type",
+      header: t("Type"),
       cell: ({ row }) => (
         <Badge variant="secondary" className="capitalize">
-          {row.original.consumer.type}
+          {t(row.original.consumer.type)}
         </Badge>
       ),
     },
     {
       accessorKey: "value",
-      header: "Value",
+      header: t("Value"),
       cell: ({ row }) => (
         <span className="font-mono">
           {formatNumber(row.original.value)} {row.original.consumer.unit}
@@ -128,7 +129,7 @@ export default function ReadingsPage() {
     },
     {
       accessorKey: "notes",
-      header: "Notes",
+      header: t("Notes"),
       cell: ({ row }) => (
         <span className="text-muted-foreground">
           {row.original.notes || "-"}
@@ -159,15 +160,15 @@ export default function ReadingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Readings"
-        description={`All readings for ${activeHousehold.name}`}
+        title={t("Readings")}
+        description={t("All readings for {name}", { name: activeHousehold.name })}
         actions={
           <Select value={selectedConsumerId} onValueChange={setSelectedConsumerId}>
             <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by consumer" />
+              <SelectValue placeholder={t("Filter by consumer")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All consumers</SelectItem>
+              <SelectItem value="all">{t("All consumers")}</SelectItem>
               {consumers.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.name}
@@ -183,9 +184,9 @@ export default function ReadingsPage() {
           <CardContent className="flex flex-col items-center gap-4 py-12">
             <ClipboardList className="h-10 w-10 text-muted-foreground" />
             <div>
-              <h3 className="font-semibold">No readings yet</h3>
+              <h3 className="font-semibold">{t("No readings yet")}</h3>
               <p className="text-sm text-muted-foreground">
-                Add readings from the consumer detail page.
+                {t("Add readings from the consumer detail page.")}
               </p>
             </div>
           </CardContent>

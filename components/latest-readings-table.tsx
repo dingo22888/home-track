@@ -18,53 +18,42 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Consumer, Reading } from "@/lib/types"
-import { formatDate } from "@/lib/format"
+import { useI18n } from "@/lib/i18n"
 
 type ReadingWithConsumer = Reading & { consumer: Consumer }
-
-const columns: ColumnDef<ReadingWithConsumer>[] = [
-  {
-    accessorKey: "consumer.name",
-    header: "Consumer",
-    cell: ({ row }) => (
-      <Link
-        href={`/consumers/${row.original.consumer_id}`}
-        className="font-medium underline-offset-4 hover:underline"
-      >
-        {row.original.consumer.name}
-      </Link>
-    ),
-  },
-  {
-    accessorKey: "consumer.type",
-    header: "Type",
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="capitalize">
-        {row.original.consumer.type}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: "value",
-    header: "Value",
-    cell: ({ row }) => (
-      <span className="font-mono">
-        {row.original.value} {row.original.consumer.unit}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "reading_date",
-    header: "Date",
-    cell: ({ row }) => formatDate(row.original.reading_date),
-  },
-]
 
 interface LatestReadingsTableProps {
   readings: ReadingWithConsumer[]
 }
 
 export function LatestReadingsTable({ readings }: LatestReadingsTableProps) {
+  const { t, formatDate, formatNumber } = useI18n()
+  const columns: ColumnDef<ReadingWithConsumer>[] = [
+    {
+      accessorKey: "consumer.name",
+      header: t("Consumer"),
+      cell: ({ row }) => (
+        <Link href={`/consumers/${row.original.consumer_id}`} className="font-medium underline-offset-4 hover:underline">
+          {row.original.consumer.name}
+        </Link>
+      ),
+    },
+    {
+      accessorKey: "consumer.type",
+      header: t("Type"),
+      cell: ({ row }) => <Badge variant="secondary">{t(row.original.consumer.type)}</Badge>,
+    },
+    {
+      accessorKey: "value",
+      header: t("Value"),
+      cell: ({ row }) => <span className="font-mono">{formatNumber(row.original.value)} {row.original.consumer.unit}</span>,
+    },
+    {
+      accessorKey: "reading_date",
+      header: t("Date"),
+      cell: ({ row }) => formatDate(row.original.reading_date),
+    },
+  ]
   const table = useReactTable({
     data: readings,
     columns,
@@ -74,12 +63,12 @@ export function LatestReadingsTable({ readings }: LatestReadingsTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Latest Readings</CardTitle>
+        <CardTitle>{t("Latest Readings")}</CardTitle>
       </CardHeader>
       <CardContent>
         {readings.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">
-            No readings yet. Add your first reading to get started.
+            {t("No readings yet. Add your first reading to get started.")}
           </p>
         ) : (
           <div className="overflow-x-auto">

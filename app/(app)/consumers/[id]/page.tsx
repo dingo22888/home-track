@@ -26,10 +26,11 @@ import {
 } from "@tanstack/react-table"
 import { Plus, ArrowLeft } from "lucide-react"
 import type { Consumer, Reading } from "@/lib/types"
-import { formatDate, formatNumber } from "@/lib/format"
 import { ConsumptionChart } from "@/components/consumption-chart"
+import { useI18n } from "@/lib/i18n"
 
 export default function ConsumerDetailPage() {
+  const { t, formatDate, formatNumber } = useI18n()
   const params = useParams()
   const consumerId = params.id as string
   const [consumer, setConsumer] = useState<Consumer | null>(null)
@@ -66,12 +67,12 @@ export default function ConsumerDetailPage() {
   const columns: ColumnDef<Reading>[] = [
     {
       accessorKey: "reading_date",
-      header: "Date",
+      header: t("Date"),
       cell: ({ row }) => formatDate(row.original.reading_date),
     },
     {
       accessorKey: "value",
-      header: "Value",
+      header: t("Value"),
       cell: ({ row }) => (
         <span className="font-mono">
           {formatNumber(row.original.value)} {consumer?.unit}
@@ -80,7 +81,7 @@ export default function ConsumerDetailPage() {
     },
     {
       id: "consumption",
-      header: "Consumption",
+      header: t("Consumption"),
       cell: ({ row }) => {
         const idx = readings.indexOf(row.original)
         if (idx < readings.length - 1) {
@@ -98,7 +99,7 @@ export default function ConsumerDetailPage() {
     },
     {
       accessorKey: "notes",
-      header: "Notes",
+      header: t("Notes"),
       cell: ({ row }) => (
         <span className="text-muted-foreground">
           {row.original.notes || "-"}
@@ -126,11 +127,11 @@ export default function ConsumerDetailPage() {
   if (!consumer) {
     return (
       <div className="flex flex-col gap-6">
-        <PageHeader title="Consumer not found" />
+        <PageHeader title={t("Consumer not found")} />
         <Button asChild variant="outline">
           <Link href="/consumers">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to consumers
+            {t("Back to consumers")}
           </Link>
         </Button>
       </div>
@@ -143,16 +144,16 @@ export default function ConsumerDetailPage() {
         <Button asChild variant="ghost" size="icon">
           <Link href="/consumers">
             <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only">Back</span>
+            <span className="sr-only">{t("Back")}</span>
           </Link>
         </Button>
         <PageHeader
           title={consumer.name}
-          description={`${consumer.type} - ${consumer.unit}`}
+          description={`${t(consumer.type)} - ${consumer.unit}`}
           actions={
             <Button onClick={() => setDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Add reading
+              {t("Add reading")}
             </Button>
           }
         />
@@ -161,17 +162,17 @@ export default function ConsumerDetailPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Type</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("Type")}</CardTitle>
           </CardHeader>
           <CardContent>
             <Badge variant="secondary" className="capitalize">
-              {consumer.type}
+              {t(consumer.type)}
             </Badge>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Unit</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("Unit")}</CardTitle>
           </CardHeader>
           <CardContent>
             <span className="font-mono text-lg">{consumer.unit}</span>
@@ -179,28 +180,28 @@ export default function ConsumerDetailPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Location</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("Location")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <span>{consumer.location || "Not specified"}</span>
+            <span>{consumer.location || t("Not specified")}</span>
           </CardContent>
         </Card>
       </div>
 
       <ConsumptionChart
-      title="Verbrauch über Zeit"
+      title="Consumption over time"
       unit={consumer.unit}
       readings={readings}
       />
 
       <Card>
         <CardHeader>
-          <CardTitle>Reading History</CardTitle>
+          <CardTitle>{t("Reading History")}</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {readings.length === 0 ? (
             <p className="px-6 py-8 text-center text-sm text-muted-foreground">
-              No readings yet. Add your first reading.
+              {t("No readings yet. Add your first reading.")}
             </p>
           ) : (
             <div className="overflow-x-auto">

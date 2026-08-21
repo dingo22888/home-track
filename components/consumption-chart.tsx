@@ -12,12 +12,12 @@ import {
   startOfWeek,
   startOfYear,
 } from "date-fns"
-import { de } from "date-fns/locale"
+import { de, enUS } from "date-fns/locale"
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { formatNumber } from "@/lib/format"
+import { useI18n } from "@/lib/i18n"
 
 export type ConsumptionInterval = "day" | "week" | "month" | "year"
 
@@ -41,15 +41,11 @@ interface ConsumptionChartProps {
 }
 
 const labels: Record<ConsumptionInterval, string> = {
-  day: "Tag",
-  week: "Woche",
-  month: "Monat",
-  year: "Jahr",
+  day: "Day",
+  week: "Week",
+  month: "Month",
+  year: "Year",
 }
-
-const chartConfig = {
-  consumption: { label: "Verbrauch", color: "var(--chart-1)" },
-} satisfies ChartConfig
 
 function bucketStart(date: Date, interval: ConsumptionInterval) {
   if (interval === "day") return format(date, "yyyy-MM-dd")
@@ -72,12 +68,13 @@ function bucketLength(date: Date, interval: ConsumptionInterval) {
   return differenceInCalendarDays(addMonths(start, 1), start)
 }
 
-function formatBucketLabel(date: string, interval: ConsumptionInterval) {
+function formatBucketLabel(date: string, interval: ConsumptionInterval, language: "de" | "en") {
   const parsed = parseISO(date)
-  if (interval === "day") return format(parsed, "dd.MM.yy", { locale: de })
-  if (interval === "week") return format(parsed, "'KW' II RRRR", { locale: de })
+  const dateLocale = language === "de" ? de : enUS
+  if (interval === "day") return format(parsed, language === "de" ? "dd.MM.yy" : "MM/dd/yy", { locale: dateLocale })
+  if (interval === "week") return format(parsed, language === "de" ? "'KW' II RRRR" : "'W' II RRRR", { locale: dateLocale })
   if (interval === "year") return format(parsed, "yyyy", { locale: de })
-  return format(parsed, "MMM yy", { locale: de })
+  return format(parsed, "MMM yy", { locale: dateLocale })
 }
 
 /**
@@ -196,10 +193,14 @@ export function ConsumptionChart({
   readings,
   data,
   unit,
-  title = "Verbrauch über Zeit",
+  title = "Consumption over time",
   compact = false,
   defaultInterval = "month",
 }: ConsumptionChartProps) {
+  const { t, language, formatNumber } = useI18n()
+  const chartConfig = useMemo(() => ({
+    consumption: { label: t("Consumption"), color: "var(--chart-1)" },
+  } satisfies ChartConfig), [t])
   const [interval, setInterval] =
     useState<ConsumptionInterval>(defaultInterval)
   const points = useMemo(
@@ -208,7 +209,7 @@ export function ConsumptionChart({
   )
   const chartData = points.map((point) => ({
     ...point,
-    label: formatBucketLabel(point.date, interval),
+    label: formatBucketLabel(point.date, interval, language),
   }))
   const containsEstimates = points.some((point) => point.estimated)
 
@@ -217,7 +218,7 @@ export function ConsumptionChart({
       <CardHeader className={compact ? "pb-2" : undefined}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className={compact ? "text-base" : undefined}>
-            {title}
+            {t(title)}
           </CardTitle>
           {!data && (
             <ToggleGroup
@@ -228,11 +229,11 @@ export function ConsumptionChart({
               }
               size="sm"
               variant="outline"
-              aria-label="Verbrauchsintervall"
+              aria-label={t("Consumption interval")}
             >
               {(Object.keys(labels) as ConsumptionInterval[]).map((key) => (
                 <ToggleGroupItem key={key} value={key}>
-                  {labels[key]}
+                  {t(labels[key])}
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
@@ -242,7 +243,7 @@ export function ConsumptionChart({
       <CardContent>
         {chartData.length === 0 ? (
           <p className="flex h-56 items-center justify-center text-sm text-muted-foreground">
-            Noch nicht genügend Ablesungen für ein Diagramm.
+            {t("Not enough readings for a chart yet.")}
           </p>
         ) : (
           <>
@@ -277,15 +278,15 @@ export function ConsumptionChart({
                         const point = item.payload as ConsumptionPoint
                         const coverage =
                           point.days === point.periodDays
-                            ? `${point.days} Tage`
-                            : `${point.days} von ${point.periodDays} Tagen, Teilzeitraum`
+                            ? t("{days} days", { days: point.days })
+                            : t("{days} of {periodDays} days, partial period", { days: point.days, periodDays: point.periodDays })
                         const estimate = point.estimated
-                          ? ", zeitanteilig geschätzt"
+                          ? t(", allocated proportionally")
                           : ""
 
                         return [
                           `${formatNumber(Number(value))} ${unit}`,
-                          `Verbrauch (${coverage}${estimate})`,
+                          t("Consumption ({coverage}{estimate})", { coverage, estimate }),
                         ]
                       }}
                     />
@@ -307,8 +308,7 @@ export function ConsumptionChart({
             </ChartContainer>
             {!compact && containsEstimates && (
               <p className="mt-2 text-xs text-muted-foreground">
-                Hellere Balken enthalten zeitanteilig verteilte Werte zwischen
-                weiter auseinanderliegenden Ablesungen.
+                {t("Lighter bars contain values allocated proportionally between readings that are farther apart.")}
               </p>
             )}
           </>

@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -8,8 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { AlertCircle } from "lucide-react"
+import { useI18n } from "@/lib/i18n"
 
 export default function AuthErrorPage() {
+  const { t } = useI18n()
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-sm text-center">
@@ -18,15 +22,15 @@ export default function AuthErrorPage() {
             <AlertCircle className="h-6 w-6 text-destructive" />
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">
-            Authentication error
+            {t("Authentication error")}
           </CardTitle>
           <CardDescription>
-            Something went wrong during authentication. Please try again.
+            {t("Something went wrong during authentication. Please try again.")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Button asChild className="w-full">
-            <Link href="/auth/login">Back to sign in</Link>
+            <Link href="/auth/login">{t("Back to sign in")}</Link>
           </Button>
         </CardContent>
       </Card>

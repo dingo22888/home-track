@@ -10,8 +10,10 @@ import { ConsumptionChart, getConsumptionPoints } from "@/components/consumption
 import { EmptyHouseholdState } from "@/components/empty-household-state"
 import type { Consumer, Reading } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useI18n } from "@/lib/i18n"
 
 export default function DashboardPage() {
+  const { t } = useI18n()
   const { activeHousehold, loading: householdLoading } = useHousehold()
   const [consumers, setConsumers] = useState<Consumer[]>([])
   const [latestReadings, setLatestReadings] = useState<
@@ -100,7 +102,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Dashboard"
+        title={t("Dashboard")}
         description={activeHousehold.name}
       />
       <DashboardCards
@@ -110,8 +112,8 @@ export default function DashboardPage() {
       {consumers.length > 0 && (
         <section className="flex flex-col gap-4" aria-labelledby="consumption-overview">
           <div>
-            <h2 id="consumption-overview" className="text-lg font-semibold">Consumption overview</h2>
-            <p className="text-sm text-muted-foreground">Recent usage for each consumer.</p>
+            <h2 id="consumption-overview" className="text-lg font-semibold">{t("Consumption overview")}</h2>
+            <p className="text-sm text-muted-foreground">{t("Recent usage for each consumer.")}</p>
           </div>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {consumers.map((consumer) => (
