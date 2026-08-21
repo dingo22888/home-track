@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { format } from "date-fns"
+import { useI18n } from "@/lib/i18n"
 
 interface ReadingFormDialogProps {
   open: boolean
@@ -32,6 +33,7 @@ export function ReadingFormDialog({
   unit,
   onSuccess,
 }: ReadingFormDialogProps) {
+  const { t, language, parseNumber } = useI18n()
   const [value, setValue] = useState("")
   const [readingDate, setReadingDate] = useState(format(new Date(), "yyyy-MM-dd"))
   const [notes, setNotes] = useState("")
@@ -48,7 +50,7 @@ export function ReadingFormDialog({
 
     const { error } = await supabase.from("readings").insert({
       consumer_id: consumerId,
-      value: parseFloat(value),
+      value: parseNumber(value),
       reading_date: readingDate,
       notes: notes || null,
       created_by: user?.id || null,
@@ -60,7 +62,7 @@ export function ReadingFormDialog({
       return
     }
 
-    toast.success("Reading saved")
+    toast.success(t("Reading saved"))
     setValue("")
     setReadingDate(format(new Date(), "yyyy-MM-dd"))
     setNotes("")
@@ -74,26 +76,27 @@ export function ReadingFormDialog({
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add reading</DialogTitle>
+            <DialogTitle>{t("Add reading")}</DialogTitle>
             <DialogDescription>
-              Enter the current meter reading value.
+              {t("Add a meter reading for this consumer.")}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="reading-value">Value ({unit})</Label>
+              <Label htmlFor="reading-value">{t("Value")} ({unit})</Label>
               <Input
                 id="reading-value"
-                type="number"
-                step="any"
-                placeholder={`e.g. 12345.67`}
+                type="text"
+                inputMode="decimal"
+                pattern={language === "de" ? "[0-9.]*[,]?[0-9]*" : "[0-9,]*[.]?[0-9]*"}
+                placeholder={language === "de" ? "z. B. 12.345,67" : "e.g. 12,345.67"}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 required
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="reading-date">Reading date</Label>
+              <Label htmlFor="reading-date">{t("Reading date")}</Label>
               <Input
                 id="reading-date"
                 type="date"
@@ -103,10 +106,10 @@ export function ReadingFormDialog({
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="reading-notes">Notes (optional)</Label>
+              <Label htmlFor="reading-notes">{t("Notes (optional)")}</Label>
               <Textarea
                 id="reading-notes"
-                placeholder="Any notes about this reading..."
+                placeholder={t("Any notes about this reading...")}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
@@ -115,7 +118,7 @@ export function ReadingFormDialog({
           </div>
           <DialogFooter>
             <Button type="submit" disabled={saving}>
-              {saving ? "Saving..." : "Save reading"}
+              {saving ? t("Saving...") : t("Save reading")}
             </Button>
           </DialogFooter>
         </form>

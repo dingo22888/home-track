@@ -23,6 +23,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import type { ConsumerType } from "@/lib/types"
+import { useI18n } from "@/lib/i18n"
 
 const CONSUMER_TYPES: { value: ConsumerType; label: string; defaultUnit: string }[] = [
   { value: "electricity", label: "Electricity", defaultUnit: "kWh" },
@@ -44,6 +45,7 @@ export function ConsumerFormDialog({
   householdId,
   onSuccess,
 }: ConsumerFormDialogProps) {
+  const { t } = useI18n()
   const [name, setName] = useState("")
   const [type, setType] = useState<ConsumerType>("electricity")
   const [unit, setUnit] = useState("kWh")
@@ -79,7 +81,7 @@ export function ConsumerFormDialog({
       return
     }
 
-    toast.success("Consumer created")
+    toast.success(t("Consumer created"))
     setName("")
     setType("electricity")
     setUnit("kWh")
@@ -95,17 +97,17 @@ export function ConsumerFormDialog({
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add consumer</DialogTitle>
+            <DialogTitle>{t("Add consumer")}</DialogTitle>
             <DialogDescription>
-              Add a new meter or consumer to track.
+              {t("Add a new meter or consumer to track.")}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="consumer-name">Name</Label>
+              <Label htmlFor="consumer-name">{t("Name")}</Label>
               <Input
                 id="consumer-name"
-                placeholder="e.g. Kitchen Electricity Meter"
+                placeholder={t("e.g. Kitchen Electricity Meter")}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -113,25 +115,25 @@ export function ConsumerFormDialog({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="consumer-type">Type</Label>
+                <Label htmlFor="consumer-type">{t("Type")}</Label>
                 <Select value={type} onValueChange={(v) => handleTypeChange(v as ConsumerType)}>
                   <SelectTrigger id="consumer-type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {CONSUMER_TYPES.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
+                    {CONSUMER_TYPES.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {t(item.label)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="consumer-unit">Unit</Label>
+                <Label htmlFor="consumer-unit">{t("Unit")}</Label>
                 <Input
                   id="consumer-unit"
-                  placeholder="e.g. kWh"
+                  placeholder={t("e.g. kWh")}
                   value={unit}
                   onChange={(e) => setUnit(e.target.value)}
                   required
@@ -139,19 +141,19 @@ export function ConsumerFormDialog({
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="consumer-location">Location (optional)</Label>
+              <Label htmlFor="consumer-location">{t("Location (optional)")}</Label>
               <Input
                 id="consumer-location"
-                placeholder="e.g. Basement"
+                placeholder={t("e.g. Basement")}
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="consumer-notes">Notes (optional)</Label>
+              <Label htmlFor="consumer-notes">{t("Notes (optional)")}</Label>
               <Textarea
                 id="consumer-notes"
-                placeholder="Any additional notes..."
+                placeholder={t("Any additional notes...")}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
@@ -160,7 +162,7 @@ export function ConsumerFormDialog({
           </div>
           <DialogFooter>
             <Button type="submit" disabled={saving}>
-              {saving ? "Saving..." : "Add consumer"}
+              {saving ? t("Saving...") : t("Add consumer")}
             </Button>
           </DialogFooter>
         </form>

@@ -27,11 +27,13 @@ import {
 import { Plus, Gauge } from "lucide-react"
 import type { Consumer } from "@/lib/types"
 import { EmptyHouseholdState } from "@/components/empty-household-state"
+import { useI18n } from "@/lib/i18n"
 
-const columns: ColumnDef<Consumer>[] = [
+function getColumns(t: (source: string) => string): ColumnDef<Consumer>[] {
+  return [
   {
     accessorKey: "name",
-    header: "Name",
+    header: t("Name"),
     cell: ({ row }) => (
       <Link
         href={`/consumers/${row.original.id}`}
@@ -43,23 +45,23 @@ const columns: ColumnDef<Consumer>[] = [
   },
   {
     accessorKey: "type",
-    header: "Type",
+    header: t("Type"),
     cell: ({ row }) => (
       <Badge variant="secondary" className="capitalize">
-        {row.original.type}
+        {t(row.original.type)}
       </Badge>
     ),
   },
   {
     accessorKey: "unit",
-    header: "Unit",
+    header: t("Unit"),
     cell: ({ row }) => (
       <span className="font-mono text-sm">{row.original.unit}</span>
     ),
   },
   {
     accessorKey: "location",
-    header: "Location",
+    header: t("Location"),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {row.original.location || "-"}
@@ -68,16 +70,18 @@ const columns: ColumnDef<Consumer>[] = [
   },
   {
     accessorKey: "is_active",
-    header: "Status",
+    header: t("Status"),
     cell: ({ row }) => (
       <Badge variant={row.original.is_active ? "default" : "outline"}>
-        {row.original.is_active ? "Active" : "Inactive"}
+        {t(row.original.is_active ? "Active" : "Inactive")}
       </Badge>
     ),
   },
-]
+  ]
+}
 
 export default function ConsumersPage() {
+  const { t } = useI18n()
   const { activeHousehold, loading: householdLoading } = useHousehold()
   const [consumers, setConsumers] = useState<Consumer[]>([])
   const [loading, setLoading] = useState(true)
@@ -108,7 +112,7 @@ export default function ConsumersPage() {
 
   const table = useReactTable({
     data: consumers,
-    columns,
+    columns: getColumns(t),
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -128,12 +132,12 @@ export default function ConsumersPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Consumers"
-        description={`Meters and consumers in ${activeHousehold.name}`}
+        title={t("Consumers")}
+        description={t("Meters and consumers in {name}", { name: activeHousehold.name })}
         actions={
           <Button onClick={() => setDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
-            Add consumer
+            {t("Add consumer")}
           </Button>
         }
       />
@@ -143,14 +147,14 @@ export default function ConsumersPage() {
           <CardContent className="flex flex-col items-center gap-4 py-12">
             <Gauge className="h-10 w-10 text-muted-foreground" />
             <div>
-              <h3 className="font-semibold">No consumers yet</h3>
+              <h3 className="font-semibold">{t("No consumers yet")}</h3>
               <p className="text-sm text-muted-foreground">
-                Add your first meter or consumer to start tracking.
+                {t("Add your first meter or consumer to start tracking.")}
               </p>
             </div>
             <Button onClick={() => setDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Add consumer
+              {t("Add consumer")}
             </Button>
           </CardContent>
         </Card>

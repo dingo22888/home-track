@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { LogOut, User } from "lucide-react"
+import { Check, Languages, LogOut, User } from "lucide-react"
+import { useI18n, type Language } from "@/lib/i18n"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,6 +20,7 @@ export function UserNav() {
   const [email, setEmail] = useState<string | null>(null)
   const [displayName, setDisplayName] = useState<string | null>(null)
   const router = useRouter()
+  const { language, setLanguage, t } = useI18n()
 
   useEffect(() => {
     const supabase = createClient()
@@ -56,13 +58,13 @@ export function UserNav() {
             <AvatarFallback className="text-xs">{initials}</AvatarFallback>
           </Avatar>
           <span className="truncate text-sm">
-            {displayName || email || "User"}
+            {displayName || email || t("User")}
           </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
-          <p className="text-sm font-medium">{displayName || "User"}</p>
+          <p className="text-sm font-medium">{displayName || t("User")}</p>
           {email && (
             <p className="text-xs text-muted-foreground">{email}</p>
           )}
@@ -70,12 +72,23 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push("/settings")}>
           <User className="mr-2 h-4 w-4" />
-          Settings
+          {t("Settings")}
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Languages className="h-4 w-4" />
+          {t("Language")}
+        </DropdownMenuLabel>
+        {(["de", "en"] as Language[]).map((value) => (
+          <DropdownMenuItem key={value} onSelect={() => setLanguage(value)}>
+            <span className="mr-2 w-4">{language === value && <Check className="h-4 w-4" />}</span>
+            {value === "de" ? t("German") : t("English")}
+          </DropdownMenuItem>
+        ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
-          Sign out
+          {t("Sign out")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

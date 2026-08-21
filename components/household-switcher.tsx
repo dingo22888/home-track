@@ -3,6 +3,7 @@
 import { ChevronsUpDown, Check } from "lucide-react"
 import { useHousehold } from "@/lib/household-context"
 import { Button } from "@/components/ui/button"
+import { useI18n } from "@/lib/i18n"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +12,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function HouseholdSwitcher() {
+  const { t } = useI18n()
   const { households, activeHousehold, setActiveHouseholdId, loading } =
     useHousehold()
 
   if (loading) {
     return (
       <Button variant="outline" className="w-full justify-start" disabled>
-        <span className="text-muted-foreground">Loading...</span>
+        <span className="text-muted-foreground">{t("Loading...")}</span>
       </Button>
     )
   }
@@ -25,7 +27,7 @@ export function HouseholdSwitcher() {
   if (households.length === 0) {
     return (
       <Button variant="outline" className="w-full justify-start" disabled>
-        <span className="text-muted-foreground">No households</span>
+        <span className="text-muted-foreground">{t("No households")}</span>
       </Button>
     )
   }
@@ -39,7 +41,7 @@ export function HouseholdSwitcher() {
           role="combobox"
         >
           <span className="truncate">
-            {activeHousehold?.name || "Select household"}
+            {activeHousehold?.name || t("Select household")}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

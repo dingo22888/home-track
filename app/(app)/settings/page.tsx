@@ -26,8 +26,10 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
+import { useI18n } from "@/lib/i18n"
 
 export default function SettingsPage() {
+  const { t } = useI18n()
   const [displayName, setDisplayName] = useState("")
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(true)
@@ -72,7 +74,7 @@ export default function SettingsPage() {
         .eq("id", user.id)
     }
 
-    toast.success("Profile updated")
+    toast.success(t("Profile updated"))
     setSaving(false)
   }
 
@@ -94,35 +96,35 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Settings" description="Manage your account" />
+      <PageHeader title={t("Settings")} description={t("Manage your account")} />
 
       <Card>
         <form onSubmit={handleUpdateProfile}>
           <CardHeader>
-            <CardTitle>Profile</CardTitle>
-            <CardDescription>Update your personal information.</CardDescription>
+            <CardTitle>{t("Profile")}</CardTitle>
+            <CardDescription>{t("Update your personal information.")}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="settings-email">Email</Label>
+              <Label htmlFor="settings-email">{t("Email")}</Label>
               <Input id="settings-email" value={email} disabled />
               <p className="text-xs text-muted-foreground">
-                Email cannot be changed here.
+                {t("Email cannot be changed here.")}
               </p>
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="settings-display-name">Display name</Label>
+              <Label htmlFor="settings-display-name">{t("Display name")}</Label>
               <Input
                 id="settings-display-name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Your display name"
+                placeholder={t("Your display name")}
               />
             </div>
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={saving}>
-              {saving ? "Saving..." : "Save changes"}
+              {saving ? t("Saving...") : t("Save changes")}
             </Button>
           </CardFooter>
         </form>
@@ -130,20 +132,20 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Appearance</CardTitle>
-          <CardDescription>Customize the look of the app.</CardDescription>
+          <CardTitle>{t("Appearance")}</CardTitle>
+          <CardDescription>{t("Customize the look of the app.")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="theme-select">Theme</Label>
+            <Label htmlFor="theme-select">{t("Theme")}</Label>
             <Select value={theme} onValueChange={setTheme}>
               <SelectTrigger id="theme-select" className="w-48">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="system">System</SelectItem>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">{t("System")}</SelectItem>
+                <SelectItem value="light">{t("Light")}</SelectItem>
+                <SelectItem value="dark">{t("Dark")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -152,13 +154,13 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Account</CardTitle>
-          <CardDescription>Manage your session.</CardDescription>
+          <CardTitle>{t("Account")}</CardTitle>
+          <CardDescription>{t("Manage your session.")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Separator className="mb-4" />
           <Button variant="destructive" onClick={handleSignOut}>
-            Sign out
+            {t("Sign out")}
           </Button>
         </CardContent>
       </Card>

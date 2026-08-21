@@ -27,8 +27,10 @@ import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Plus, MapPin, Users } from "lucide-react"
 import { toast } from "sonner"
+import { useI18n } from "@/lib/i18n"
 
 export default function HouseholdsPage() {
+  const { t } = useI18n()
   const {
     households,
     memberships,
@@ -64,7 +66,7 @@ export default function HouseholdsPage() {
       return
     }
 
-    toast.success("Household created")
+    toast.success(t("Household created"))
     setName("")
     setAddress("")
     setOpen(false)
@@ -94,30 +96,30 @@ export default function HouseholdsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Households"
-        description="Manage your households"
+        title={t("Households")}
+        description={t("Manage your households")}
         actions={
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                New household
+                {t("New household")}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <form onSubmit={handleCreate}>
                 <DialogHeader>
-                  <DialogTitle>Create household</DialogTitle>
+                  <DialogTitle>{t("Create household")}</DialogTitle>
                   <DialogDescription>
-                    Add a new household to start tracking consumption.
+                    {t("Add a new household to start tracking consumption.")}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-4">
                   <div className="flex flex-col gap-2">
-                    <Label htmlFor="household-name">Name</Label>
+                    <Label htmlFor="household-name">{t("Name")}</Label>
                     <Input
                       id="household-name"
-                      placeholder="e.g. Main Apartment"
+                      placeholder={t("e.g. Main Apartment")}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
@@ -125,11 +127,11 @@ export default function HouseholdsPage() {
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="household-address">
-                      Address (optional)
+                      {t("Address (optional)")}
                     </Label>
                     <Input
                       id="household-address"
-                      placeholder="e.g. 123 Main St"
+                      placeholder={t("e.g. 123 Main St")}
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                     />
@@ -137,7 +139,7 @@ export default function HouseholdsPage() {
                 </div>
                 <DialogFooter>
                   <Button type="submit" disabled={creating}>
-                    {creating ? "Creating..." : "Create"}
+                    {creating ? t("Creating...") : t("Create")}
                   </Button>
                 </DialogFooter>
               </form>
@@ -151,9 +153,9 @@ export default function HouseholdsPage() {
           <CardContent className="flex flex-col items-center gap-4 py-12">
             <Users className="h-10 w-10 text-muted-foreground" />
             <div>
-              <h3 className="font-semibold">No households yet</h3>
+              <h3 className="font-semibold">{t("No households yet")}</h3>
               <p className="text-sm text-muted-foreground">
-                Create your first household to get started.
+                {t("Create your first household to get started.")}
               </p>
             </div>
           </CardContent>
@@ -174,7 +176,7 @@ export default function HouseholdsPage() {
                 <div className="flex items-start justify-between">
                   <CardTitle className="text-base">{h.name}</CardTitle>
                   <Badge variant="outline" className="capitalize">
-                    {getRoleForHousehold(h.id)}
+                    {t(getRoleForHousehold(h.id))}
                   </Badge>
                 </div>
                 {h.address && (
@@ -186,7 +188,7 @@ export default function HouseholdsPage() {
               </CardHeader>
               <CardContent>
                 {activeHousehold?.id === h.id && (
-                  <Badge className="text-xs">Active</Badge>
+                  <Badge className="text-xs">{t("Active")}</Badge>
                 )}
               </CardContent>
             </Card>

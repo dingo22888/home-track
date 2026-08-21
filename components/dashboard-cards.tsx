@@ -1,5 +1,8 @@
+"use client"
+
 import { Gauge, ClipboardList, Activity } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useI18n } from "@/lib/i18n"
 
 interface DashboardCardsProps {
   consumerCount: number
@@ -10,50 +13,51 @@ export function DashboardCards({
   consumerCount,
   readingCount,
 }: DashboardCardsProps) {
+  const { t, formatNumber } = useI18n()
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">
-            Active Consumers
+            {t("Active Consumers")}
           </CardTitle>
           <Gauge className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{consumerCount}</div>
+          <div className="text-2xl font-bold">{formatNumber(consumerCount, 0)}</div>
           <p className="text-xs text-muted-foreground">
-            Tracked in this household
+            {t("Tracked in this household")}
           </p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">
-            Latest Readings
+            {t("Latest Readings")}
           </CardTitle>
           <ClipboardList className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{readingCount}</div>
+          <div className="text-2xl font-bold">{formatNumber(readingCount, 0)}</div>
           <p className="text-xs text-muted-foreground">
-            Consumers with readings
+            {t("Consumers with readings")}
           </p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">Coverage</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("Coverage")}</CardTitle>
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {consumerCount > 0
+            {formatNumber(consumerCount > 0
               ? Math.round((readingCount / consumerCount) * 100)
-              : 0}
+              : 0, 0)}
             %
           </div>
           <p className="text-xs text-muted-foreground">
-            Consumers with at least one reading
+            {t("Consumers with at least one reading")}
           </p>
         </CardContent>
       </Card>
