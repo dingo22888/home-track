@@ -27,6 +27,7 @@ import {
 import { Plus, ArrowLeft } from "lucide-react"
 import type { Consumer, Reading } from "@/lib/types"
 import { formatDate, formatNumber } from "@/lib/format"
+import { ConsumptionChart, getConsumptionPoints } from "@/components/consumption-chart"
 
 export default function ConsumerDetailPage() {
   const params = useParams()
@@ -185,6 +186,12 @@ export default function ConsumerDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      <ConsumptionChart
+        title="Consumption over time"
+        unit={consumer.unit}
+        data={getConsumptionPoints(readings)}
+      />
 
       <Card>
         <CardHeader>

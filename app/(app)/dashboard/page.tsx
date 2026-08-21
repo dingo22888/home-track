@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client"
 import { PageHeader } from "@/components/page-header"
 import { DashboardCards } from "@/components/dashboard-cards"
 import { LatestReadingsTable } from "@/components/latest-readings-table"
+import { ConsumptionChart, getConsumptionPoints } from "@/components/consumption-chart"
 import { EmptyHouseholdState } from "@/components/empty-household-state"
 import type { Consumer, Reading } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -16,6 +17,7 @@ export default function DashboardPage() {
   const [latestReadings, setLatestReadings] = useState<
     (Reading & { consumer: Consumer })[]
   >([])
+  const [readingsByConsumer, setReadingsByConsumer] = useState<Record<string, Reading[]>>({})
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -39,6 +41,7 @@ export default function DashboardPage() {
         .order("name")
 
       setConsumers(consumersData || [])
+      const readingsById: Record<string, Reading[]> = {}
 
       // Fetch latest reading per consumer using distinct on
       if (consumersData && consumersData.length > 0) {
@@ -50,6 +53,13 @@ export default function DashboardPage() {
           .order("consumer_id")
           .order("reading_date", { ascending: false })
 
+        for (const reading of readingsData || []) {
+          const list = readingsById[reading.consumer_id] || []
+          list.push(reading as Reading)
+          readingsById[reading.consumer_id] = list
+        }
+        setReadingsByConsumer(readingsById)
+
         // Get latest reading per consumer (client-side dedup)
         const latestMap = new Map<string, Reading & { consumer: Consumer }>()
         for (const r of readingsData || []) {
@@ -60,6 +70,7 @@ export default function DashboardPage() {
         setLatestReadings(Array.from(latestMap.values()))
       } else {
         setLatestReadings([])
+        setReadingsByConsumer({})
       }
 
       setLoading(false)
@@ -96,6 +107,25 @@ export default function DashboardPage() {
         consumerCount={consumers.length}
         readingCount={latestReadings.length}
       />
+      {consumers.length > 0 && (
+        <section className="flex flex-col gap-4" aria-labelledby="consumption-overview">
+          <div>
+            <h2 id="consumption-overview" className="text-lg font-semibold">Consumption overview</h2>
+            <p className="text-sm text-muted-foreground">Recent usage for each consumer.</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {consumers.map((consumer) => (
+              <ConsumptionChart
+                key={consumer.id}
+                title={consumer.name}
+                unit={consumer.unit}
+                compact
+                data={getConsumptionPoints(readingsByConsumer[consumer.id] || [])}
+              />
+            ))}
+          </div>
+        </section>
+      )}
       <LatestReadingsTable readings={latestReadings} />
     </div>
   )
