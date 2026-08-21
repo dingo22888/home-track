@@ -120,7 +120,7 @@ export default function DashboardPage() {
                 title={consumer.name}
                 unit={consumer.unit}
                 compact
-                data={getConsumptionPoints(readingsByConsumer[consumer.id] || [])}
+                data={getConsumptionPoints(readingsByConsumer[consumer.id] || [], "month")}
               />
             ))}
           </div>
